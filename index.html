@@ -14,50 +14,83 @@
 
                 var data = response['data'];
 
+                // Filter by type
+                var application = data.filter(function (item) {
+                    return item.type == "application";
+                });
+                var library = data.filter(function (item) {
+                    return item.type == "library";
+                });
+                var other = data.filter(function (item) {
+                    return item.type == "other";
+                });
+
                 // Populate table
                 var populate = function(data){
                     var tbl_body = "";
                     $.each(data, function(i, v) {
                         var line = '<a class="btn btn-' + v['css_class'] +
-                               '" data-toggle="collapse" href="#collapse' + v['name'] +
-                               '" role="button" aria-expanded="false" aria-controls="collapse' + v['name'] + 
+                               '" data-toggle="collapse" href="#collapse' + v['id'] +
+                               '" role="button" aria-expanded="false" aria-controls="collapse' + v['id'] + 
                                '" title="' + v['title'] + '">' +
-                               v['name'] + ' ' + ' <span class="badge">' + v['badge'] + '</span>' + '</a>' + 
-                               '<div class="collapse" id="collapse' + v['name'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
-                               'style="margin-bottom: 4px; padding:8px; border-top-left-radius: 0px; border-top-left-radius: 0px; ">' + v['body'] + '</div></div>';
+                               v['name'] + ' ' + '<span class="label label-pill label-' + v['label_css_class'] + '" style="margin-left: 4px;">' + v['label'] + '</span>' + '</a>' + 
+                               '<div class="collapse" id="collapse' + v['id'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
+                               'style="border-top-left-radius: 0px; border-top-left-radius: 0px; "><div class="panel-body">' + v['body'].linkify() + '</div></div></div>';
                         tbl_body += line;
                     })
                     return tbl_body;
                 }
-                $(".list-upto-120").html(populate(data.slice(0, 120)));
-                $(".list-upto-240").html(populate(data.slice(120, 240)));
-                $(".list-upto-360").html(populate(data.slice(240, 360)));
+                $(".list-application").html(populate(application));
+                $(".list-library").html(populate(library));
+                $(".list-other").html(populate(other));
 
                 handle_css();
             };
 
+            if (!String.linkify) {
+                String.prototype.linkify = function () {
+
+                    // http://, https://, ftp://
+                    var urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+
+                    // www. sans http:// or https://
+                    var pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+
+                    // Email addresses
+                    var emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
+
+                    return this
+                        .replace(urlPattern, '<a href="$&">$&</a>')
+                        .replace(pseudoUrlPattern, '$1<a href="http://$2">$2</a>')
+                        .replace(emailAddressPattern, '<a href="mailto:$&">$&</a>');
+                };
+            }
+
             function handle_css(){
-                var ids = [".list-upto-120", ".list-upto-240", ".list-upto-360"]
+                var ids = [".list-application", ".list-library", ".list-other"]
 
                 $.each(ids, function(idx, id) {
 
                     var $items = $(id),
-                        $visible = $items.find(":visible"),
-                        $first = $visible.first(),
-                        $last = $visible.last();
+                    $visible = $items.find("a.btn:visible"),
+                    $first = $visible.first(),
+                    $last = $visible.last();
 
                     $items.find(".btn-last-child").removeClass("btn-last-child");
+                    $items.find(".btn-first-child").removeClass("btn-first-child");
+
                     $first.addClass("btn-first-child");
+                    $last.addClass("btn-last-child");
 
                 });
             };
 
             function show_hide_py3(){
                 var $this = $(this),
-                    $items = $(".btn-success"),
+                    $items = $(".btn-success,.panel-success"),
                     currentState = $this.data("state") || "Show",
                     nextState = currentState == "Show" ? "Hide" : "Show",
-                    buttonText = currentState + " Python 3 Ready";
+                    buttonText = currentState + " Python3 Ready";
 
                 if (currentState === "Show")
                     $items.hide();
@@ -78,45 +111,43 @@
     </script>
     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        /* @media (min-width: 1200px) {.container{max-width: 970px;}} */
-        body{margin-top:15px;}
+        @media (min-width: 1200px) {.container{max-width: 970px;}}
+        body{margin-top: 0px;}
         a.btn, h1{text-align: center;}
-        a.btn-last-child, canvas, body{margin-bottom:15px;}
-        a.btn {border-bottom-width: 0; border-radius: 0; width: 100%}
+        a.btn-last-child, canvas, body{margin-bottom: 0px;}
+        a.btn {border-bottom-width: 0; border-radius: 0; width: 100%;}
         a.btn-first-child{border-top-left-radius: 5px; border-top-right-radius: 5px;}
         a.btn-last-child{border-bottom-width: 1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;}
         pre {text-align: left;}
-        footer{text-align: center;}
-        .center-block {max-height: 450px}
-        .btn-success.preview {background-color: #7CCE7C;}
+        footer{text-align: center; margin-bottom: 25px;}
+        .center-block {max-height: 340px}
+        .panel {margin-bottom: 4px;}
+        /* .btn-success.preview {background-color: #7CCE7C;} */
     </style>
-    <title>Python 3 Readiness - Python 3 support table for most popular Python packages</title>
+    <title>VFX Python3 Readiness</title>
 </head>
 <body>
     <div class="container">
-        <div class="row">
+        <div class="row" style="margin-bottom: 30px;">
             <div class="col-sm-12 col-md-12">
-                <h1>Are we Python 3 ready?</h1>
-                <p class="text-center text-default">Python 3 support graph for the most popular VFX packages!</p>
+                <h1>Are we Python3 ready?</h1>
+                <p class="text-center text-default">Python3 support graph for the most popular VFX packages!</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
                 <object data="wheel.svg" type="image/svg+xml" class="center-block"></object>
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h2>What is this about?</h2>
-                        <p>This site shows Python 3 support for the popular packages in VFX production:</p>
-                        <ol>
-                            <li><span class="text-success">Green</span> packages support Python 3;</li>
-                            <li><span class="text-warning">Orange</span> packages are known to be in progress towards the Python 3 support;</li>
-                            <li><span class="text-muted">White</span> packages don't support Python 3 yet.</li>
-                        </ol>
-                    </div>
-                    <div class="col-sm-6">
-                        <h2>What is a package in this context?</h2>
-                        <p>A package is any substantial part of the VFX pipeline.</p>
-                    </div>
-                </div>
-                <h2>Package 'x' is white. What can I do?</h2>
-                    <p>There can be many reasons why a package still does not support Python 3.</p>
+                <h2>What is this about?</h2>
+                <p>This site shows Python3 support for the popular packages in VFX production:</p>
+                <ol>
+                    <li><span class="text-success">Green</span> packages support Python3;</li>
+                    <li><span class="text-warning">Orange</span> packages are known to be in progress towards the Python3 support;</li>
+                    <li><span class="text-muted">White</span> packages don't support Python3 yet.</li>
+                </ol>
+                <h2>What is a package in this context?</h2>
+                <p>A package is any substantial part of the VFX pipeline.</p>
+                <h2>My package is white. What can I do?</h2>
+                    <p>There can be many reasons why a package still does not support Python3.</p>
                     <ul>
                         <li>
                             <p>
@@ -134,52 +165,46 @@
                             </p>
                         </li>
                     </ul>
-                <h2>How do you identify Python 3 support?</h2>
+                <h2>How do you identify Python3 support?</h2>
                 <p>
                     This site pulls from the spreadsheet mantained by the author of the site, which itself is a copy of the data found in the community
                     mantained spreadsheet. Please see a note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details.
                 </p>
+                <h2>Thanks</h2>
+                <p>
+                    This is derivative work from <a href="http://chhantyal.net/py3readiness/">py3readiness</a>, a site that tracks
+                    general
+                    compatibility with Python3, which in turn is a derivative of <a href="pythonwheels.com">pythonwheels.com</a>, a
+                    site that tracks
+                    which Python distributions ship the wheel distribution.
+                </p>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4 col-md-4">
-                <a id="show-hide-py3" href="javascript:void(0)" class="btn btn-default btn-first-child btn-last-child">Hide Python 3 Ready</a>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4 col-md-4">
+            <div class="col-sm-6">
+                <a id="show-hide-py3" href="javascript:void(0)" class="btn btn-default btn-first-child btn-last-child">Hide Python3 Ready</a>
+                <br>
+                <br>
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        <h3 class="panel-title text-center"><span class="glyphicon glyphicon-cog"></span> DCC Applications</h3>
+                        <h3 class="panel-title text-center"><span class="glyphicon glyphicon-cog"></span> Applications</h3>
                     </div>
                 </div>
-                <div class="list-upto-120">py3readiness.org requires javascript to be enabled to display the list of packages.</div>
-            </div>
-            <div class="col-sm-4 col-md-4">
+                <div class="list-application">py3readiness.org requires javascript to be enabled to display the list of packages.</div>
+                <br>
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title text-center"><span class="glyphicon glyphicon-duplicate"></span> Libraries</h3>
                     </div>
                 </div>
-                <div class="list-upto-240"></div>
-            </div>
-            <div class="col-sm-4 col-md-4">
+                <div class="list-library"></div>
+                <br>
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title text-center"><span class="glyphicon glyphicon-th-large"></span> Other</h3>
                     </div>
                 </div>
-                <div class="list-upto-360"></div>
+                <div class="list-other"></div>
             </div>
         </div>
-        <h2>Thanks</h2>
-        <p>
-            This is derivative work from <a href="http://chhantyal.net/py3readiness/">py3readiness</a>, a site that tracks general
-            compatibility with Python 3, which in turn is a derivative of <a href="pythonwheels.com">pythonwheels.com</a>, a site that tracks
-            which Python distributions ship the wheel distribution.
-        </p>
         <footer>
             <p>
                 Maintained by <a href="https://aleksandarkocic.com/">Aleksandar Kocic</a>;

@@ -1,55 +1,104 @@
 {
     "data": [
         {
-            "downloads": 640549346,
-            "name": "Maya",
-            "value": 1,
-            "css_class": "success",
-            "py3support": true,
-            "badge": "",
-            "title": "This package supports Python 3 :)",
-            "body": "This package supports Python 3 :)"
-        },
-        {
-            "downloads": 614202074,
-            "name": "Houdini",
-            "value": 1,
-            "css_class": "success",
-            "py3support": true,
-            "badge": "Preview",
-            "title": "This package supports Python 3 :)",
-            "body": "This package supports Python 3 :)"
-        },
-        {
-            "downloads": 530046750,
-            "name": "Nuke",
-            "value": 1,
-            "css_class": "warning",
+            "id": "maya",
+            "name": "Autodesk Maya",
+            "type": "application",
             "py3support": false,
-            "badge": "",
-            "title": "This package supports Python 3 :)",
-            "body": "This package supports Python 3 :)"
-        },
-        {
-            "downloads": 508485038,
-            "name": "botocore",
-            "value": 1,
             "css_class": "default",
+            "label": "Preview",
+            "label_css_class": "success",
+            "title": "3D DCC",
+            "body": "Available for Linux in latest 2020 Beta"
+        },
+        {
+            "id": "houdini",
+            "name": "SideFx Houdini",
+            "type": "application",
             "py3support": false,
-            "badge": "",
+            "css_class": "default",
+            "label": "Preview",
+            "label_css_class": "success",
+            "title": "3D DCC",
+            "body": "SideFX released a separate Python 3 Tech Preview build in 2019 for Houdini 18.0 in addition to the main Python 2 build. The Tech Preview build is not production ready. SideFX is aiming to release a production ready Python 3 build in 2020."
+        },
+        {
+            "id": "mari",
+            "name": "Foundry Mari",
+            "type": "application",
+            "py3support": false,
+            "css_class": "default",
+            "label": "Preview",
+            "label_css_class": "success",
+            "title": "This package supports Python 3 :)",
+            "body": "Python 3 support in progress. Tech Preview available here: https://community.foundry.com/discuss/topic/153645/python-3-tech-preview-mari-4-6"
+        },
+        {
+            "id": "nuke",
+            "name": "Foundry Nuke",
+            "type": "application",
+            "py3support": false,
+            "css_class": "default",
+            "label": "In Progress",
+            "label_css_class": "warning",
+            "title": "This package supports Python 3 :)",
+            "body": "Python 3 support is undergoing internal testing at Foundry. Currently a tech preview 13.1v1a2 available for testing."
+        },
+        {
+            "id": "katana",
+            "name": "Foundry Katana",
+            "type": "application",
+            "py3support": false,
+            "css_class": "default",
+            "label": "",
+            "label_css_class": "default",
             "title": "This package supports Python 3 :)",
             "body": "This package supports Python 3 :)"
         },
         {
-            "downloads": 460222302,
-            "name": "python-dateutil",
-            "value": 1,
-            "css_class": "success",
+            "id": "substance_designer",
+            "name": "Adobe Substance Designer",
+            "type": "application",
             "py3support": true,
-            "badge": "",
+            "css_class": "success",
+            "label": "",
+            "label_css_class": "success",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "id": "oiio",
+            "name": "OpenImageIO",
+            "type": "library",
+            "py3support": true,
+            "css_class": "success",
+            "label": "",
+            "label_css_class": "success",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "id": "pymel",
+            "name": "PyMel",
+            "type": "library",
+            "py3support": false,
+            "css_class": "default",
+            "label": "In Progress",
+            "label_css_class": "warning",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "id": "conda",
+            "name": "Conda",
+            "type": "other",
+            "py3support": true,
+            "css_class": "success",
+            "label": "",
+            "label_css_class": "success",
             "title": "This package supports Python 3 :)",
             "body": "This package supports Python 3 :)"
         }
     ],
-    "last_update": "Tuesday, 06 August 2019, 10:47:26 "
+    "last_update": "Tuesday, 28 September 2020, 22:12:11 "
 }
