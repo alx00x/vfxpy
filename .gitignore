@@ -1,0 +1,11 @@
+*.py[cod]
+data.json
+pip-selfcheck.json
+.Python
+include/
+bin/
+lib/
+.idea/
+.vscode/
+.venv/
+.DS_Store

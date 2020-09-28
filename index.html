@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            function json_success(response){
+                // Update copy
+                console.log(response);
+                $("span.date").html(response['last_update']);
+
+                var data = response['data'];
+
+                // Populate table
+                var populate = function(data){
+                    var tbl_body = "";
+                    $.each(data, function(i, v) {
+                        var line = '<a class="btn btn-' + v['css_class'] +
+                               '" data-toggle="collapse" href="#collapse' + v['name'] +
+                               '" role="button" aria-expanded="false" aria-controls="collapse' + v['name'] + 
+                               '" title="' + v['title'] + '">' +
+                               v['name'] + ' ' + ' <span class="badge">' + v['badge'] + '</span>' + '</a>' + 
+                               '<div class="collapse" id="collapse' + v['name'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
+                               'style="margin-bottom: 4px; padding:8px; border-top-left-radius: 0px; border-top-left-radius: 0px; ">' + v['body'] + '</div></div>';
+                        tbl_body += line;
+                    })
+                    return tbl_body;
+                }
+                $(".list-upto-120").html(populate(data.slice(0, 120)));
+                $(".list-upto-240").html(populate(data.slice(120, 240)));
+                $(".list-upto-360").html(populate(data.slice(240, 360)));
+
+                handle_css();
+            };
+
+            function handle_css(){
+                var ids = [".list-upto-120", ".list-upto-240", ".list-upto-360"]
+
+                $.each(ids, function(idx, id) {
+
+                    var $items = $(id),
+                        $visible = $items.find(":visible"),
+                        $first = $visible.first(),
+                        $last = $visible.last();
+
+                    $items.find(".btn-last-child").removeClass("btn-last-child");
+                    $first.addClass("btn-first-child");
+
+                });
+            };
+
+            function show_hide_py3(){
+                var $this = $(this),
+                    $items = $(".btn-success"),
+                    currentState = $this.data("state") || "Show",
+                    nextState = currentState == "Show" ? "Hide" : "Show",
+                    buttonText = currentState + " Python 3 Ready";
+
+                if (currentState === "Show")
+                    $items.hide();
+                else
+                    $items.show();
+
+                $this.data("state", nextState);
+                $this.text(buttonText);
+
+                handle_css();
+            };
+
+            $(document).ready(function() {
+                $.getJSON('results.json', json_success);
+                $("#show-hide-py3").click(show_hide_py3);
+            });
+        });
+    </script>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* @media (min-width: 1200px) {.container{max-width: 970px;}} */
+        body{margin-top:15px;}
+        a.btn, h1{text-align: center;}
+        a.btn-last-child, canvas, body{margin-bottom:15px;}
+        a.btn {border-bottom-width: 0; border-radius: 0; width: 100%}
+        a.btn-first-child{border-top-left-radius: 5px; border-top-right-radius: 5px;}
+        a.btn-last-child{border-bottom-width: 1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;}
+        pre {text-align: left;}
+        footer{text-align: center;}
+        .center-block {max-height: 450px}
+        .btn-success.preview {background-color: #7CCE7C;}
+    </style>
+    <title>Python 3 Readiness - Python 3 support table for most popular Python packages</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <h1>Are we Python 3 ready?</h1>
+                <p class="text-center text-default">Python 3 support graph for the most popular VFX packages!</p>
+                <object data="wheel.svg" type="image/svg+xml" class="center-block"></object>
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2>What is this about?</h2>
+                        <p>This site shows Python 3 support for the popular packages in VFX production:</p>
+                        <ol>
+                            <li><span class="text-success">Green</span> packages support Python 3;</li>
+                            <li><span class="text-warning">Orange</span> packages are known to be in progress towards the Python 3 support;</li>
+                            <li><span class="text-muted">White</span> packages don't support Python 3 yet.</li>
+                        </ol>
+                    </div>
+                    <div class="col-sm-6">
+                        <h2>What is a package in this context?</h2>
+                        <p>A package is any substantial part of the VFX pipeline.</p>
+                    </div>
+                </div>
+                <h2>Package 'x' is white. What can I do?</h2>
+                    <p>There can be many reasons why a package still does not support Python 3.</p>
+                    <ul>
+                        <li>
+                            <p>
+                                If you are package maintainer or a developer, it's time to start porting (if you haven't already).
+                                <a href="https://www.visualeffectssociety.com/ves-committees/?jump-9">VES Technology Committee</a>
+                                and relevant industry leaders maintaining the <a href="https://vfxplatform.com/">vfxplatform</a>
+                                have been <strong>strongly advising to make that commitment for the CY2020 releases.</strong>
+                                If you are not able to give the time needed, please seek help from the community
+                                by announcing your need for help on blogs, forums, twitter, mailing lists, etc.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                If you are user of the package, send a friendly note to the package maintainer or software vendor representative.
+                            </p>
+                        </li>
+                    </ul>
+                <h2>How do you identify Python 3 support?</h2>
+                <p>
+                    This site pulls from the spreadsheet mantained by the author of the site, which itself is a copy of the data found in the community
+                    mantained spreadsheet. Please see a note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 col-md-4">
+                <a id="show-hide-py3" href="javascript:void(0)" class="btn btn-default btn-first-child btn-last-child">Hide Python 3 Ready</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title text-center"><span class="glyphicon glyphicon-cog"></span> DCC Applications</h3>
+                    </div>
+                </div>
+                <div class="list-upto-120">py3readiness.org requires javascript to be enabled to display the list of packages.</div>
+            </div>
+            <div class="col-sm-4 col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title text-center"><span class="glyphicon glyphicon-duplicate"></span> Libraries</h3>
+                    </div>
+                </div>
+                <div class="list-upto-240"></div>
+            </div>
+            <div class="col-sm-4 col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title text-center"><span class="glyphicon glyphicon-th-large"></span> Other</h3>
+                    </div>
+                </div>
+                <div class="list-upto-360"></div>
+            </div>
+        </div>
+        <h2>Thanks</h2>
+        <p>
+            This is derivative work from <a href="http://chhantyal.net/py3readiness/">py3readiness</a>, a site that tracks general
+            compatibility with Python 3, which in turn is a derivative of <a href="pythonwheels.com">pythonwheels.com</a>, a site that tracks
+            which Python distributions ship the wheel distribution.
+        </p>
+        <footer>
+            <p>
+                Maintained by <a href="https://aleksandarkocic.com/">Aleksandar Kocic</a>;
+                updates on <a href="https://twitter.com/vfxpy">Twitter</a>;
+                source code on <a href="https://github.com/koaleksa/vfxpy">GitHub</a>.
+            </p>
+            <p>Last updated on <span class="date"></span></p>
+        </footer>
+    </div>
+</body>
+</html>

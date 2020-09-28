@@ -1,0 +1,55 @@
+{
+    "data": [
+        {
+            "downloads": 640549346,
+            "name": "Maya",
+            "value": 1,
+            "css_class": "success",
+            "py3support": true,
+            "badge": "",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "downloads": 614202074,
+            "name": "Houdini",
+            "value": 1,
+            "css_class": "success",
+            "py3support": true,
+            "badge": "Preview",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "downloads": 530046750,
+            "name": "Nuke",
+            "value": 1,
+            "css_class": "warning",
+            "py3support": false,
+            "badge": "",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "downloads": 508485038,
+            "name": "botocore",
+            "value": 1,
+            "css_class": "default",
+            "py3support": false,
+            "badge": "",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        },
+        {
+            "downloads": 460222302,
+            "name": "python-dateutil",
+            "value": 1,
+            "css_class": "success",
+            "py3support": true,
+            "badge": "",
+            "title": "This package supports Python 3 :)",
+            "body": "This package supports Python 3 :)"
+        }
+    ],
+    "last_update": "Tuesday, 06 August 2019, 10:47:26 "
+}
