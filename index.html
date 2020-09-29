@@ -35,7 +35,22 @@
                                '" title="' + v['title'] + '">' +
                                v['name'] + ' ' + '<span class="label label-pill label-' + v['label_css_class'] + '" style="margin-left: 4px;">' + v['label'] + '</span>' + '</a>' + 
                                '<div class="collapse" id="collapse' + v['id'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
-                               'style="border-top-left-radius: 0px; border-top-left-radius: 0px; "><div class="panel-body">' + v['body'].linkify() + '</div></div></div>';
+                               'style="border-top-left-radius: 0px; border-top-left-radius: 0px; "><div class="panel-body">' + v['body'].linkify() +
+                               '</div>' +
+                               '<div class="panel-footer""> \
+                                <div class="row"> \
+                                <div class="col-xs-10"> \
+                                <p class="text-muted" style="font-family:monospace;"><small>Package version: 2020</small></p> \
+                                <p class="text-muted" style="font-family:monospace;"><small>Supports: 2.7, 3.6, 3.7, 3.8</small></p> \
+                                </div> \
+                                <div class="col-xs-2"> \
+                                <button class="btn btn-xs"><span class="glyphicon glyphicon-home"></span></button> \
+                                <button class="btn btn-xs"><span class="glyphicon glyphicon-file"></span></button> \
+                                </div> \
+                                </div> \
+                                </div> \
+                                ' +
+                               '</div></div>';
                         tbl_body += line;
                     })
                     return tbl_body;
@@ -153,10 +168,10 @@
                             <p>
                                 If you are package maintainer or a developer, it's time to start porting (if you haven't already).
                                 <a href="https://www.visualeffectssociety.com/ves-committees/?jump-9">VES Technology Committee</a>
-                                and relevant industry leaders maintaining the <a href="https://vfxplatform.com/">vfxplatform</a>
+                                and respectable industry leaders maintaining the <a href="https://vfxplatform.com/">vfxplatform</a>
                                 have been <strong>strongly advising to make that commitment for the CY2020 releases.</strong>
-                                If you are not able to give the time needed, please seek help from the community
-                                by announcing your need for help on blogs, forums, twitter, mailing lists, etc.
+                                If you are not able to give the time needed, please seek help from the community by writing
+                                about it on blogs, forums, twitter, mailing lists, etc.
                             </p>
                         </li>
                         <li>
