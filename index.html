@@ -3,8 +3,20 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <!-- jQuery Script -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Popper.js, then Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+        crossorigin="anonymous"></script>
+
+    <!-- Optional JavaScript -->
     <script type="text/javascript">
         $(function(){
             function json_success(response){
@@ -29,28 +41,32 @@
                 var populate = function(data){
                     var tbl_body = "";
                     $.each(data, function(i, v) {
+
+                        var website_disable = (v['website'] == '' || v['website'] == undefined) ? ' disabled' : '';
+                        var source_disable = (v['source'] == '' || v['source'] == undefined) ? ' disabled' : '';
+
+                        var line_body = '<div class="panel-body" style="word-break: break-all;">' + 
+                            '<h4>' + v['vendor'] + ' ' +  v['name'] + '</h2>' +
+                            v['body'].linkify() + '</div>'
+                        var line_footer = '<div class="panel-footer" style="padding: 4px;"><div class="row">' +
+                            '<div class="col-xs-10">' +
+                                '<h6 class="text-muted" style="font-family:monospace;">Package version: ' + v['package_version'] + '</h6>' +
+                                '<h6 class="text-muted" style="font-family:monospace;">Supports python: ' + v['python_version'] + '</h6>' +
+                            '</div>' +
+                            '<div class="col-xs-2">' +
+                                '<div class="btn-group btn-group-vertical btn-group-sm pull-right" role="group">' +
+                                    '<a href="' + v['website'] + '" role="button" class="btn btn-link' + website_disable + '" title="Homepage"><span class="glyphicon glyphicon-home"></span></a>' +
+                                    '<a href="' + v['source'] + '" role="button" class="btn btn-link' + source_disable + '" title="Source code"><span class="glyphicon glyphicon-folder-open"></span></a>' +
+                                '</div>' +
+                            '</div>' +
+                            '</div></div>'
                         var line = '<a class="btn btn-' + v['css_class'] +
                                '" data-toggle="collapse" href="#collapse' + v['id'] +
                                '" role="button" aria-expanded="false" aria-controls="collapse' + v['id'] + 
                                '" title="' + v['title'] + '">' +
-                               v['name'] + ' ' + '<span class="label label-pill label-' + v['label_css_class'] + '" style="margin-left: 4px;">' + v['label'] + '</span>' + '</a>' + 
+                               v['name'] + ' ' + v['icon'] + ' ' + '<span class="label label-pill label-' + v['label_css_class'] + '" style="margin-left: 4px;">' + v['label'] + '</span>' + '</a>' + 
                                '<div class="collapse" id="collapse' + v['id'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
-                               'style="border-top-left-radius: 0px; border-top-left-radius: 0px; "><div class="panel-body">' + v['body'].linkify() +
-                               '</div>' +
-                               '<div class="panel-footer""> \
-                                <div class="row"> \
-                                <div class="col-xs-10"> \
-                                <p class="text-muted" style="font-family:monospace;"><small>Package version: 2020</small></p> \
-                                <p class="text-muted" style="font-family:monospace;"><small>Supports: 2.7, 3.6, 3.7, 3.8</small></p> \
-                                </div> \
-                                <div class="col-xs-2"> \
-                                <button class="btn btn-xs"><span class="glyphicon glyphicon-home"></span></button> \
-                                <button class="btn btn-xs"><span class="glyphicon glyphicon-file"></span></button> \
-                                </div> \
-                                </div> \
-                                </div> \
-                                ' +
-                               '</div></div>';
+                               'style="border-top-left-radius: 0px; border-top-left-radius: 0px;">' + line_body + line_footer + '</div></div>';
                         tbl_body += line;
                     })
                     return tbl_body;
@@ -121,10 +137,12 @@
             $(document).ready(function() {
                 $.getJSON('results.json', json_success);
                 $("#show-hide-py3").click(show_hide_py3);
+                $('[data-toggle="tooltip"]').tooltip({
+                    container: 'body'
+                })
             });
         });
     </script>
-    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         @media (min-width: 1200px) {.container{max-width: 970px;}}
         body{margin-top: 0px;}
@@ -134,10 +152,9 @@
         a.btn-first-child{border-top-left-radius: 5px; border-top-right-radius: 5px;}
         a.btn-last-child{border-bottom-width: 1px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;}
         pre {text-align: left;}
-        footer{text-align: center; margin-bottom: 25px;}
+        footer{text-align: center; margin-bottom: 25px; margin-top: 15px;}
         .center-block {max-height: 340px}
         .panel {margin-bottom: 4px;}
-        /* .btn-success.preview {background-color: #7CCE7C;} */
     </style>
     <title>VFX Python3 Readiness</title>
 </head>
@@ -156,8 +173,7 @@
                 <p>This site shows Python3 support for the popular packages in VFX production:</p>
                 <ol>
                     <li><span class="text-success">Green</span> packages support Python3;</li>
-                    <li><span class="text-warning">Orange</span> packages are known to be in progress towards the Python3 support;</li>
-                    <li><span class="text-muted">White</span> packages don't support Python3 yet.</li>
+                    <li><span class="text-muted">White</span> packages do not support Python3 yet.</li>
                 </ol>
                 <h2>What is a package in this context?</h2>
                 <p>A package is any substantial part of the VFX pipeline.</p>
@@ -182,8 +198,8 @@
                     </ul>
                 <h2>How do you identify Python3 support?</h2>
                 <p>
-                    This site pulls from the spreadsheet mantained by the author of the site, which itself is a copy of the data found in the community
-                    mantained spreadsheet. Please see a note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details.
+                    This site pulls the data from a spreadsheet mantained by the author of the site, which itself is a copy of the data found in the community
+                    mantained <a href="https://docs.google.com/spreadsheets/d/10XG92byepTD-LEeXx4mBjhGaNPtJsd_QaXlZ866wj7k">spreadsheet</a>. Please see a note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details.
                 </p>
                 <h2>Thanks</h2>
                 <p>
@@ -203,7 +219,7 @@
                         <h3 class="panel-title text-center"><span class="glyphicon glyphicon-cog"></span> Applications</h3>
                     </div>
                 </div>
-                <div class="list-application">py3readiness.org requires javascript to be enabled to display the list of packages.</div>
+                <div class="list-application">vfxpy.com requires javascript to be enabled to display the list of packages.</div>
                 <br>
                 <div class="panel panel-info">
                     <div class="panel-heading">
