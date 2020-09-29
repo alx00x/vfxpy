@@ -45,7 +45,7 @@
                         var website_disable = (v['website'] == '' || v['website'] == undefined) ? ' disabled' : '';
                         var source_disable = (v['source'] == '' || v['source'] == undefined) ? ' disabled' : '';
 
-                        var line_body = '<div class="panel-body" style="word-break: break-all;">' + 
+                        var line_body = '<div class="panel-body" style="word-break: break-word;">' + 
                             '<h4>' + v['vendor'] + ' ' +  v['name'] + '</h2>' +
                             v['body'].linkify() + '</div>'
                         var line_footer = '<div class="panel-footer" style="padding: 4px;"><div class="row">' +
