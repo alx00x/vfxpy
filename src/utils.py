@@ -1,3 +1,4 @@
+import re
 import json
 import copy
 import datetime
@@ -39,7 +40,7 @@ def _get_projects_from_spreadsheet():
     data = list()
     for item in items:
         item_data = dict()
-        item_data["id"] = item.get("Product").lower().replace(" ", "_").replace(".", "_")
+        item_data["id"] = re.sub("[^0-9a-zA-Z]+", "_", item.get("Product").lower())
         item_data["vendor"] = item.get("Vendor")
         item_data["name"] = item.get("Product")
         item_data["type"] = item.get("Type")
