@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import copy
@@ -17,9 +18,8 @@ def get_json_url(package_name):
 
 
 def get_packages():
-    print('Getting packages...')
+    print("Getting packages...")
     packages = _get_projects_from_spreadsheet()
-    print('- Done.')
     return packages
 
 
@@ -65,27 +65,32 @@ def _get_projects_from_spreadsheet():
 
 
 def remove_irrelevant_packages(packages):
-    print('Removing cruft...')
+    print("Removing cruft...")
     packages = [package for package in packages
                 if package.get('name') not in FLAGS.keys()]
-    print('- Done.')
     return packages
 
 
 def save_to_file(packages):
     now = datetime.datetime.now()
-    key = 'results.json'
-    tmp_path = './{0}'.format(key)
-    with open(tmp_path, 'w') as f:
+    key = "results.json"
+
+    if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
+        tmp_path = "/tmp/{0}".format(key)
+    else:
+        tmp_path = "./{0}".format(key)
+
+    with open(tmp_path, "w") as f:
         f.write(json.dumps({
-            'data': packages,
-            'last_update': now.strftime('%A, %d %B %Y, %X %Z'),
+            "data": packages,
+            "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
         }))
 
-    # extra_args = copy.deepcopy(metadata)
-    # extra_args["ContentType"] = "application/json"
+    extra_args = copy.deepcopy(metadata)
+    extra_args["ContentType"] = "application/json"
 
-    # try:
-    #     s3_client.upload_file(tmp_path, bucket, key, ExtraArgs=extra_args)
-    # except Exception as e:
-    #     print(e)
+    try:
+        print("Uploading results to S3...")
+        s3_client.upload_file(tmp_path, bucket, key, ExtraArgs=extra_args)
+    except Exception as err:
+        print(err)

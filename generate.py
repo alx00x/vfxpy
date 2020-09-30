@@ -10,6 +10,7 @@ def main(*args):
     packages = remove_irrelevant_packages(get_packages())
     save_to_file(packages)
     generate_svg_wheel(packages)
+    print("Exiting...")
 
 
 if __name__ == '__main__':

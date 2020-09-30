@@ -1,3 +1,4 @@
+import os
 import math
 import copy
 import xml.etree.ElementTree as et
@@ -125,17 +126,23 @@ def generate_svg_wheel(packages):
 
     add_fraction(wheel, packages, total)
 
-    tmp_wheel_path = './wheel.svg'
+    key = "wheel.svg"
+
+    if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
+        tmp_wheel_path = "/tmp/{0}".format(key)
+    else:
+        tmp_wheel_path = "./{0}".format(key)
+
     with open(tmp_wheel_path, 'wb') as svg:
         svg.write(HEADERS)
         svg.write(et.tostring(wheel))
 
-    # key = 'wheel.svg'
-    # extra_args = copy.deepcopy(metadata)
-    # extra_args["ContentType"] = "image/svg+xml"
+    extra_args = copy.deepcopy(metadata)
+    extra_args["ContentType"] = "image/svg+xml"
 
-    # try:
-    #     s3_client.upload_file(tmp_wheel_path, bucket, key,
-    #                           ExtraArgs=extra_args)
-    # except Exception as e:
-    #     print(e)
+    try:
+        print("Uploading swg to S3...")
+        s3_client.upload_file(tmp_wheel_path, bucket, key,
+                              ExtraArgs=extra_args)
+    except Exception as err:
+        print(err)
