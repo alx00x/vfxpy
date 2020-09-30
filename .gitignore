@@ -139,6 +139,9 @@ venv.bak/
 # IDEs
 .vscode
 
+# Lambda
+app.zip
+
 # Data and secrets
 data.json
 client_secret.json
