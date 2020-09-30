@@ -143,5 +143,6 @@ venv.bak/
 app.zip
 
 # Data and secrets
+setup.bat
 data.json
 client_secret.json
