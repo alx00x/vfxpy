@@ -5,6 +5,8 @@ from src.utils import get_packages, remove_irrelevant_packages, save_to_file, co
 from src.clients import s3Client, gsClient
 
 
+IS_LAMBDA_FUNCTION = os.environ["IS_LAMBDA_FUNCTION"]
+
 S3_BUCKET = os.environ["S3_BUCKET"]
 SENDER_EMAIL = os.environ["SENDER_EMAIL"]
 RECIPIENT_EMAIL = os.environ["RECIPIENT_EMAIL"]
@@ -18,6 +20,7 @@ def main(*args):
     s3_client = s3Client(S3_BUCKET, SENDER_EMAIL, RECIPIENT_EMAIL)
     gs_client = gsClient(VFXPY_SPREADSHEET_KEY, COMMUNITY_SPREADSHEET_KEY)
 
+    print("Starting...")
     packages = remove_irrelevant_packages(get_packages(gs_client))
     save_to_file(s3_client, packages)
     generate_svg_wheel(s3_client, packages)

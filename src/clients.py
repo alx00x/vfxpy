@@ -2,7 +2,6 @@ import boto3
 from botocore.exceptions import ClientError
 
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
 from src.template import changes_table, warning_body
 
@@ -20,15 +19,23 @@ class s3Client(object):
         self.recipient = recipient
 
     def list_files(self, prefix):
-        response = self.client.list_objects(Bucket=self.bucket, Prefix=prefix)
+        files = list()
+        response = self.client.list_objects_v2(Bucket=self.bucket, Prefix=prefix, StartAfter=prefix)
         for content in response.get("Contents", []):
-            yield content.get("Key")
+            files.append({"Key": content.get("Key"), "LastModified": content.get("LastModified")})
+        files.sort(key=lambda item: item["LastModified"], reverse=True)
+        return files
 
     def upload_file(self, file, key, extra_args):
-        print("Uploading results to S3...")
         self.client.upload_file(file, self.bucket, key, ExtraArgs=extra_args)
 
-    def notify(self, changes):
+    def get_object(self, key):
+        return self.client.get_object(Bucket=self.bucket, Key=key)
+
+    def delete_object(self, key):
+        return self.client.delete_object(Bucket=self.bucket, Key=key)
+
+    def notify(self, changes, sid):
         subject = "VFXPY: there are changes for you to check! "
 
         # construct email from changes
@@ -37,13 +44,11 @@ class s3Client(object):
         <head></head>
         <body>
             <h1>VFX Python 3 Readiness</h1>
-            <p>Changes have occurred in the community spreadsheet:</p>
-            <br>
-            <br>
-        """
+            <p>Changes have occurred in the <a href="https://docs.google.com/spreadsheets/d/{sid}">community spreadsheet</a>:</p>
+        """.format(sid=sid)
 
         for idx, each in enumerate(changes):
-            body_html += "<h4>Change 02: {num}</h4>".format(num=idx)
+            body_html += "<h4>Change ID: {num}</h4>".format(num=idx)
             body_html += changes_table.format(
                 product=each["product"],
                 key=each["key"],
@@ -54,7 +59,8 @@ class s3Client(object):
         body_html += "</body></html>"
 
         body_text = ("VFX Python 3 Readiness\r\n"
-                     "Changes have occurred in the community spreadsheet!"
+                     "Changes have occurred in the community spreadsheet!\r\n"
+                     "https://docs.google.com/spreadsheets/d/{sid}".format(sid=sid)
                      )
 
         self.send_email(subject, body_html, body_text)
@@ -97,16 +103,28 @@ class s3Client(object):
 
 class gsClient(object):
     def __init__(self, vfxpy_key, community_key):
-        scope = ["https://books.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json", scope)
-        self.client = gspread.authorize(creds)
+        self.client = gspread.service_account(filename="client_secret.json")
         self.vfxpy_key = vfxpy_key
         self.community_key = community_key
 
-        self._community_book = None
         self._vfxpy_book = None
+        self._community_book = None
 
         self.initialize()
+
+    def initialize(self):
+
+        # Get vfxpy maintained spreadsheet (we cannot let this one fail)
+        print("Getting vfxpy book...")
+        self._vfxpy_book = self.client.open_by_key(self.vfxpy_key)
+
+        # Try to get community maintained spreadsheet
+        print("Getting community book...")
+        try:
+            self._community_book = self.client.open_by_key(self.community_key)
+        except Exception as err:
+            # Print to log
+            print(err)
 
     @property
     def vfxpy_book(self):
@@ -115,15 +133,3 @@ class gsClient(object):
     @property
     def community_book(self):
         return self._community_book
-
-    def initialize(self):
-
-        # Get vfxpy maintained spreadsheet (we cannot let this one fail)
-        self._vfxpy_book = self.client.open_by_key(self.vfxpy_key)
-
-        # Try to get community maintained spreadsheet
-        try:
-            self._community_book = self.client.open_by_key(self.community_key)
-        except Exception as err:
-            # Print to log
-            print(err)

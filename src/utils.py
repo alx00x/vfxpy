@@ -94,57 +94,86 @@ def compare_and_notify(s3_client, gs_client):
             now.strftime("%A, %d %B %Y, %X %Z")))
         return
 
-    community_worksheet = community_book.worksheet(0)
+    community_worksheet = community_book.get_worksheet(0)
 
     # Extract all of the values
     records = community_worksheet.get_all_records()
 
     # Construct comparable data
-    records_dict = construct_records_dict(records)
-    print("-" * 40)
-    print("records_dict:")
-    print(records_dict)
-    print("-" * 40)
+    new_record_data = construct_record_data(records)
 
     # Get last recorded data from S3
-    record_list = s3_client.list_files("/records")
-    print("-" * 40)
-    print("record_list:")
-    print(record_list)
-    print("-" * 40)
+    record_list = s3_client.list_files("records/")
+
+    if record_list:
+        newest = record_list[0]["Key"]
+        oldest = record_list[-1]["Key"]
+
+        obj = s3_client.get_object(newest)
+        content = obj["Body"].read().decode("utf-8")
+        content_dict = json.loads(content)
+
+        old_record_data = content_dict.get("data")
+
+        # delete one record if 5 already exist on S3
+        if len(record_list) >= 5:
+            s3_client.delete_object("records/{}".format(oldest))
+    else:
+        old_record_data = dict()
 
     # Compare data
     changes = list()
+    for k, new in new_record_data.items():
+        old = old_record_data.get(k)
+        if not old:
+            changes.append({
+                "product": k,
+                "key": "ALL",
+                "old_value": "NO_DATA",
+                "new_value": "FULL_SET",
+            })
+        else:
+            for key, value in new.items():
+                old_value = old.get(key)
+                if value != old_value:
+                    changes.append({
+                        "product": k,
+                        "key": key,
+                        "old_value": old_value,
+                        "new_value": value,
+                    })
 
-    # code
-
-    if changes:
+    if not changes:
+        print("No changes detected!")
+    else:
         # Send email
-        s3_client.notify(changes)
+        s3_client.notify(changes, gs_client.community_key)
 
-        # # Write the record to S3
-        # now = datetime.now(pytz.utc)
-        # timestamp = now.strftime("%y%m%d_%H%M%S")
-        # key = "/records/{}.json".format(timestamp)
+        # Write the record to S3
+        now = datetime.now(pytz.utc)
+        timestamp = now.strftime("%y%m%d_%H%M%S")
+        filename = "{}.json".format(timestamp)
+        key = "records/{}".format(filename)
 
-        # if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
-        #     tmp_path = "/tmp/{0}".format(key)
-        # else:
-        #     tmp_path = "./{0}".format(key)
+        if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
+            tmp_path = "/tmp/{0}".format(filename)
+        else:
+            tmp_path = "./{0}".format(filename)
 
-        # with open(tmp_path, "w") as f:
-        #     f.write(json.dumps({
-        #         "data": packages,
-        #         "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
-        #     }))
+        with open(tmp_path, "w") as f:
+            f.write(json.dumps({
+                "data": new_record_data,
+                "read_on": now.strftime("%A, %d %B %Y, %X %Z"),
+            }))
 
-        # extra_args = copy.deepcopy(s3_client.metadata)
-        # extra_args["ContentType"] = "application/json"
+        extra_args = copy.deepcopy(s3_client.metadata)
+        extra_args["ContentType"] = "application/json"
 
-        # print("Uploading record to S3...")
-        # s3_client.upload_file(tmp_path, key, extra_args)
+        print("Uploading record to S3...")
+        s3_client.upload_file(tmp_path, key, extra_args)
 
-def construct_records_dict(records):
+
+def construct_record_data(records):
     records_dict = dict()
 
     for item in records:
