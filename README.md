@@ -23,6 +23,19 @@ Please use issue tracker for issues, suggestions, feature requests and further e
 
 The site works by checking a google spreadsheet on daily bases. Script `generate.py` runs on AWS Lambda to generate the data shown on the website. It saves output JSON file to S3 which is used to build the graph. Site itself is hosted on S3 bucket.
 
+## Environment
+
+For lambda function to work, envrionment variables need to be set:
+
+| value                     | key                                 |
+|---------------------------|-------------------------------------|
+| IS_LAMBDA_FUNCTION        | {0/1}                               |
+| S3_BUCKET                 | {bucket name}                       |
+| SENDER_EMAIL              | {email to send from}                |
+| RECIPIENT_EMAIL           | {email to send notifications to}    |
+| VFXPY_SPREADSHEET_KEY     | {key of the "copy" spreadsheet}     |
+| COMMUNITY_SPREADSHEET_KEY | {key of the "original" spreadsheet} |
+
 ## Credits
 
 This is derivative work from [py3readiness](http://chhantyal.net/py3readiness/), a site that tracks general compatibility with Python 3, which in turn is a derivative of [pythonwheels.com](https://pythonwheels.com/), a site that tracks which Python distributions ship the wheel distribution.
