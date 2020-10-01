@@ -3,8 +3,6 @@ import math
 import copy
 import xml.etree.ElementTree as et
 
-from src.storage import s3_client, bucket, metadata
-
 HEADERS = b'''<?xml version=\"1.0\" standalone=\"no\"?>
 <?xml-stylesheet href="wheel.css" type="text/css"?>
 <!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"
@@ -101,7 +99,7 @@ def add_fraction(wheel, packages, total):
     total_packages.text = '{0}'.format(total)
 
 
-def generate_svg_wheel(packages):
+def generate_svg_wheel(s3_client, packages):
     total = len(packages)
     wheel = et.Element(
         'svg',
@@ -137,12 +135,9 @@ def generate_svg_wheel(packages):
         svg.write(HEADERS)
         svg.write(et.tostring(wheel))
 
-    extra_args = copy.deepcopy(metadata)
+    extra_args = copy.deepcopy(s3_client.metadata)
     extra_args["ContentType"] = "image/svg+xml"
+    extra_args["ACL"] = "public-read"
 
-    try:
-        print("Uploading swg to S3...")
-        s3_client.upload_file(tmp_wheel_path, bucket, key,
-                              ExtraArgs=extra_args)
-    except Exception as err:
-        print(err)
+    print("Uploading swg to S3...")
+    s3_client.upload_file(tmp_wheel_path, key, extra_args)

@@ -2,39 +2,28 @@ import os
 import re
 import json
 import copy
-import datetime
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+import pytz
+from datetime import datetime
 
-from src.storage import bucket, metadata, s3_client
 from src.flags import FLAGS
 
-BASE_URL = 'https://pypi.org/pypi'
 
-
-def get_json_url(package_name):
-    return BASE_URL + '/' + package_name + '/json'
-
-
-def get_packages():
+def get_packages(gs_client):
     print("Getting packages...")
-    packages = _get_projects_from_spreadsheet()
+
+    # Find a spreadsheet by key and open the content sheet
+    book = gs_client.vfxpy_book
+    worksheet = book.worksheet("content")
+
+    packages = _get_projects_from_spreadsheet(worksheet)
     return packages
 
 
-def _get_projects_from_spreadsheet():
-    # use credentials to create a client to interact with the Google Drive API
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json", scope)
-    client = gspread.authorize(creds)
-
-    # Find a workbook by name and open the first sheet
-    spr = client.open("Python 3 VFX packages (vfxpy.com)")
-    sheet = spr.worksheet("content")
+def _get_projects_from_spreadsheet(worksheet):
 
     # Extract all of the values
-    items = sheet.get_all_records()
+    items = worksheet.get_all_records()
 
     # Remap values
     data = list()
@@ -67,12 +56,12 @@ def _get_projects_from_spreadsheet():
 def remove_irrelevant_packages(packages):
     print("Removing cruft...")
     packages = [package for package in packages
-                if package.get('name') not in FLAGS.keys()]
+                if package.get("name") not in FLAGS.keys()]
     return packages
 
 
-def save_to_file(packages):
-    now = datetime.datetime.now()
+def save_to_file(s3_client, packages):
+    now = datetime.now(pytz.utc)
     key = "results.json"
 
     if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
@@ -86,11 +75,80 @@ def save_to_file(packages):
             "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
         }))
 
-    extra_args = copy.deepcopy(metadata)
+    extra_args = copy.deepcopy(s3_client.metadata)
     extra_args["ContentType"] = "application/json"
+    extra_args["ACL"] = "public-read"
 
-    try:
-        print("Uploading results to S3...")
-        s3_client.upload_file(tmp_path, bucket, key, ExtraArgs=extra_args)
-    except Exception as err:
-        print(err)
+    print("Uploading results to S3...")
+    s3_client.upload_file(tmp_path, key, extra_args)
+
+
+def compare_and_notify(s3_client, gs_client):
+    print("Comparing data...")
+
+    # Find a spreadsheet by key and open the first sheet
+    community_book = gs_client.community_book
+    if not community_book:
+        now = datetime.now(pytz.utc)
+        s3_client.warn("Could not access community maintained spreadsheet on: {}".format(
+            now.strftime("%A, %d %B %Y, %X %Z")))
+        return
+
+    community_worksheet = community_book.worksheet(0)
+
+    # Extract all of the values
+    records = community_worksheet.get_all_records()
+
+    # Construct comparable data
+    records_dict = construct_records_dict(records)
+    print("-" * 40)
+    print("records_dict:")
+    print(records_dict)
+    print("-" * 40)
+
+    # Get last recorded data from S3
+    record_list = s3_client.list_files("/records")
+    print("-" * 40)
+    print("record_list:")
+    print(record_list)
+    print("-" * 40)
+
+    # Compare data
+    changes = list()
+
+    # code
+
+    if changes:
+        # Send email
+        s3_client.notify(changes)
+
+        # # Write the record to S3
+        # now = datetime.now(pytz.utc)
+        # timestamp = now.strftime("%y%m%d_%H%M%S")
+        # key = "/records/{}.json".format(timestamp)
+
+        # if os.environ.get("IS_LAMBDA_FUNCTION") == "1":
+        #     tmp_path = "/tmp/{0}".format(key)
+        # else:
+        #     tmp_path = "./{0}".format(key)
+
+        # with open(tmp_path, "w") as f:
+        #     f.write(json.dumps({
+        #         "data": packages,
+        #         "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
+        #     }))
+
+        # extra_args = copy.deepcopy(s3_client.metadata)
+        # extra_args["ContentType"] = "application/json"
+
+        # print("Uploading record to S3...")
+        # s3_client.upload_file(tmp_path, key, extra_args)
+
+def construct_records_dict(records):
+    records_dict = dict()
+
+    for item in records:
+        id_ = re.sub("[^0-9a-zA-Z]+", "_", item.get("Product").lower())
+        records_dict[id_] = item
+
+    return records_dict
