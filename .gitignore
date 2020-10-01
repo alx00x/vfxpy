@@ -139,8 +139,9 @@ venv.bak/
 # IDEs
 .vscode
 
-# Lambda
+# Builds
 app.zip
+layer.zip
 
 # Data and secrets
 setup.bat
