@@ -11,9 +11,7 @@ This site pulls from the data found in a google spreadsheet, which itself is a c
 
 Since the original spreadsheet is editable by pretty much anyone with an internet connection, I didn't feel comfortable pulling data directly from it. Additionally, it is not quite programmatically friendly, so a copy was necessary. Hopefully this can change in the future!
 
-**At the moment, any change will most likely take up to 24 hours to appear on the website.**
-
-A system has been set up to notify me so I can propagate updates as soon as possible.
+**At the moment, any change will most likely take up to 24 hours to appear on the website.** A system has been set up to notify me so I can propagate updates as soon as possible.
 
 ## Contribute
 
