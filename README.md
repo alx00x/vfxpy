@@ -9,7 +9,9 @@ This site pulls from the data found in a google spreadsheet, which itself is a c
 
 ## Note
 
-Since the original spreadsheet is editable by pretty much anyone with an internet connection, I didn't feel comfortable pulling data directly from it. Additionally, it is not quite programmatically friendly, so a copy was necessary. **Hopefully this can change in the future!**
+Since the original spreadsheet is editable by pretty much anyone with an internet connection, I didn't feel comfortable pulling data directly from it. Additionally, it is not quite programmatically friendly, so a copy was necessary. Hopefully this can change in the future!
+
+**At the moment, any change will most likely take up to 24 hours to appear on the website.**
 
 A system has been set up to notify me about any changes that occur in the original spreadsheet so I can update the data in the "safe copy" as soon as possible.
 
