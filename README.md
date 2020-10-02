@@ -13,7 +13,7 @@ Since the original spreadsheet is editable by pretty much anyone with an interne
 
 **At the moment, any change will most likely take up to 24 hours to appear on the website.**
 
-A system has been set up to notify me about any changes that occur in the original spreadsheet so I can update the data in the "safe copy" as soon as possible.
+A system has been set up to notify me so I can propagate updates as soon as possible.
 
 ## Contribute
 
