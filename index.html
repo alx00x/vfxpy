@@ -171,7 +171,7 @@
         });
     </script>
     <style>
-        @media (min-width: 1200px) {.container{max-width: 970px;}}
+        @media (min-width: 1200px) {.container{max-width: 980px;}}
         body{margin-top: 0px;}
         a.btn, h1{text-align: center;}
         a.btn-last-child, canvas, body{margin-bottom: 0px;}
@@ -201,32 +201,34 @@
                     <li><span class="text-success">Green</span> packages support Python3;</li>
                     <li><span class="text-muted">White</span> packages do not support Python3 yet.</li>
                 </ol>
-                <h2>What is a package in this context?</h2>
                 <p>A package is any substantial part of the VFX pipeline.</p>
+                <h2>Information is out of date, how can I change it?</h2>
+                <div class="alert alert-success" role="alert">
+                    This site pulls the data from a
+                    <a class="alert-link" href="https://docs.google.com/spreadsheets/d/10XG92byepTD-LEeXx4mBjhGaNPtJsd_QaXlZ866wj7k">
+                    community maintained spreadsheet</a> where information is aggregated. Data is vetted before the site is updated
+                    but you can contribute by making sure the spreadsheet is up to date!
+                </div>
+                <p>Please see note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details on how updating works.</p>
                 <h2>My package is white. What can I do?</h2>
-                    <p>There can be many reasons why a package still does not support Python3.</p>
-                    <ul>
-                        <li>
-                            <p>
-                                If you are package maintainer or a developer, it's time to start porting (if you haven't already).
-                                <a href="https://www.visualeffectssociety.com/ves-committees/?jump-9">VES Technology Committee</a>
-                                and respectable industry leaders maintaining the <a href="https://vfxplatform.com/">vfxplatform</a>
-                                have been <strong>strongly advising to make that commitment for the CY2020 releases.</strong>
-                                If you are not able to give the time needed, please seek help from the community by writing
-                                about it on blogs, forums, twitter, mailing lists, etc.
-                            </p>
-                        </li>
-                        <li>
-                            <p>
-                                If you are a user of the package, send a friendly note to the package maintainer or software vendor representative.
-                            </p>
-                        </li>
-                    </ul>
-                <h2>How do you identify Python3 support?</h2>
-                <p>
-                    This site pulls the data from a spreadsheet maintained by the author of the site, which itself is a copy of the data found in the community
-                    maintained <a href="https://docs.google.com/spreadsheets/d/10XG92byepTD-LEeXx4mBjhGaNPtJsd_QaXlZ866wj7k">spreadsheet</a>. Please see a note in the <a href="https://github.com/koaleksa/vfxpy">README</a> for details.
-                </p>
+                <p>There can be many reasons why a package still does not support Python3.</p>
+                <ul>
+                    <li>
+                        <p>
+                            If you are package maintainer or a developer, it's time to start porting (if you haven't already).
+                            <a href="https://www.visualeffectssociety.com/ves-committees/?jump-9">VES Technology Committee</a>
+                            and respectable industry leaders maintaining the <a href="https://vfxplatform.com/">vfxplatform</a>
+                            have been <strong>strongly advising to make that commitment for the CY2020 releases.</strong>
+                            If you are not able to give the time needed, please seek help from the community by writing
+                            about it on blogs, forums, twitter, mailing lists, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            If you are a user of the package, send a friendly note to the package maintainer or software vendor representative.
+                        </p>
+                    </li>
+                </ul>
                 <h2>Thanks</h2>
                 <p>
                     This is derivative work from <a href="http://chhantyal.net/py3readiness/">py3readiness</a>, a site that tracks
