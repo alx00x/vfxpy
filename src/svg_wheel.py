@@ -120,7 +120,8 @@ def generate_svg_wheel(s3_client, packages):
             style_class=result['css_class'],
         )
         title = et.SubElement(sector, 'title')
-        title.text = u'{0} {1}'.format(result['name'], result['icon'])
+        icon = "\u2713" if result["py3support"] else "\u2717"
+        title.text = u'{0} {1}'.format(result['name'], icon)
 
     add_fraction(wheel, packages, total)
 

@@ -61,7 +61,8 @@ class s3Client(object):
 
         body_text = ("VFX Python 3 Readiness\r\n"
                      "Changes have occurred in the community spreadsheet!\r\n"
-                     "https://docs.google.com/spreadsheets/d/{sid}".format(sid=sid)
+                     "https://docs.google.com/spreadsheets/d/{community_key}".format(
+                         community_key=community_key)
                      )
 
         self.send_email(subject, body_html, body_text)
