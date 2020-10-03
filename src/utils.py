@@ -3,8 +3,8 @@ import re
 import json
 import copy
 
-import pytz
 from datetime import datetime
+import pytz
 
 from src.flags import FLAGS
 
@@ -35,7 +35,7 @@ def _get_projects_from_spreadsheet(worksheet):
         item_data["type"] = item.get("Type")
 
         item_data["title"] = item.get("Description")
-        item_data["body"] = item.get("Notes")
+        item_data["body"] = item.get("Notes").replace("\n", "<br>")
         item_data["package_version"] = item.get("Package Version")
         item_data["python_version"] = item.get("Python 3 Version")
         item_data["website"] = item.get("Web Site").strip()
@@ -43,10 +43,15 @@ def _get_projects_from_spreadsheet(worksheet):
 
         item_data["py3support"] = True if (item.get("Status") == "yes") else False
         item_data["css_class"] = "success" if item_data["py3support"] else "default"
-        item_data["icon"] = "\u2713" if item_data["py3support"] else ""
 
-        item_data["label"] = item.get("Label")
-        item_data["label_css_class"] = "success" if (item_data["label"] == "Preview") else "warning"
+        item_data["label"] = item.get("Label").strip()
+        if item_data["label"] == "":
+            label_css_class = "default"
+        elif item_data["label"] == "Preview":
+            label_css_class = "success"
+        else:
+            label_css_class = "warning"
+        item_data["label_css_class"] = label_css_class
 
         data.append(item_data)
 
@@ -69,11 +74,13 @@ def save_to_file(s3_client, packages):
     else:
         tmp_path = "./{0}".format(key)
 
-    with open(tmp_path, "w") as f:
-        f.write(json.dumps({
-            "data": packages,
-            "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
-        }))
+    print("Saving results...")
+    json_data = {
+        "data": packages,
+        "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
+    }
+    with open(tmp_path, "w") as outfile:
+        json.dump(json_data, outfile)
 
     extra_args = copy.deepcopy(s3_client.metadata)
     extra_args["ContentType"] = "application/json"
@@ -160,11 +167,13 @@ def compare_and_notify(s3_client, gs_client):
         else:
             tmp_path = "./{0}".format(filename)
 
-        with open(tmp_path, "w") as f:
-            f.write(json.dumps({
-                "data": new_record_data,
-                "read_on": now.strftime("%A, %d %B %Y, %X %Z"),
-            }))
+        print("Saving record...")
+        json_data = {
+            "data": new_record_data,
+            "last_update": now.strftime("%A, %d %B %Y, %X %Z"),
+        }
+        with open(tmp_path, "w") as outfile:
+            json.dump(json_data, outfile)
 
         extra_args = copy.deepcopy(s3_client.metadata)
         extra_args["ContentType"] = "application/json"

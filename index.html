@@ -73,8 +73,10 @@
                         var source_disable = (v['source'] == '' || v['source'] == undefined) ? ' disabled' : '';
 
                         var line_body = '<div class="panel-body" style="word-break: break-word;">' + 
-                            '<h4>' + v['vendor'] + ' ' +  v['name'] + '</h2>' +
-                            v['body'].linkify() + '</div>'
+                            '<h4 style="display: inline;">' + v['vendor'] + ' ' +  v['name'] + '</h2>' +
+                            '<span class="label label-pill push-right-indicator label-' + v['label_css_class'] + '">' + v['label'] + '</span>' +
+                            '<p style="margin-top: 10px">' + v['body'].linkify() + '</p>' + 
+                            '</div>'
                         var line_footer = '<div class="panel-footer" style="padding: 4px;"><div class="row">' +
                             '<div class="col-xs-10">' +
                                 '<h6 class="text-muted" style="font-family:monospace;">Package version: ' + v['package_version'] + '</h6>' +
@@ -91,7 +93,8 @@
                                '" data-toggle="collapse" href="#collapse' + v['id'] +
                                '" role="button" aria-expanded="false" aria-controls="collapse' + v['id'] + 
                                '" title="' + v['title'] + '">' +
-                               v['name'] + ' ' + v['icon'] + ' ' + '<span class="label label-pill label-' + v['label_css_class'] + '" style="margin-left: 4px;">' + v['label'] + '</span>' + '</a>' + 
+                               v['name'] +
+                               '<span class="indicator push-right-indicator indicator-' + v['label_css_class'] + '"></span></a>' + 
                                '<div class="collapse" id="collapse' + v['id'] + '"><div class="panel panel-' + v['css_class'] + '" ' +
                                'style="border-top-left-radius: 0px; border-top-left-radius: 0px;">' + line_body + line_footer + '</div></div>';
                         tbl_body += line;
@@ -182,6 +185,27 @@
         footer{text-align: center; margin-bottom: 25px; margin-top: 15px;}
         .center-block {max-height: 340px}
         .panel {margin-bottom: 4px;}
+
+        .push-right-indicator {
+            float: right;
+        }
+        .indicator {
+            margin-top: 6px;
+            height: 7px;
+            width: 7px;
+            background-color: #bbb;
+            border-radius: 50%;
+        }
+        .indicator-default {
+            background-color: #d9edf7;
+            display: none;
+        }
+        .indicator-success {
+            background-color: #5CB85C;
+        }
+        .indicator-warning {
+            background-color: #f0ad4e;
+        }
     </style>
 </head>
 <body>
