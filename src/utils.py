@@ -147,7 +147,7 @@ def compare_and_notify(s3_client, gs_client):
         print("No changes detected!")
     else:
         # Send email
-        s3_client.notify(changes, gs_client.community_key)
+        s3_client.notify(changes, gs_client.community_key, gs_client.vfxpy_key)
 
         # Write the record to S3
         now = datetime.now(pytz.utc)

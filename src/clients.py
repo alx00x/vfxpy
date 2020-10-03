@@ -35,7 +35,7 @@ class s3Client(object):
     def delete_object(self, key):
         return self.client.delete_object(Bucket=self.bucket, Key=key)
 
-    def notify(self, changes, sid):
+    def notify(self, changes, community_key, vfxpy_key):
         subject = "VFXPY: there are changes for you to check! "
 
         # construct email from changes
@@ -44,8 +44,9 @@ class s3Client(object):
         <head></head>
         <body>
             <h1>VFX Python 3 Readiness</h1>
-            <p>Changes have occurred in the <a href="https://docs.google.com/spreadsheets/d/{sid}">community spreadsheet</a>:</p>
-        """.format(sid=sid)
+            <p>Changes have occurred in the <a href="https://docs.google.com/spreadsheets/d/{community_key}">community spreadsheet</a>!</p>
+            <p>Please update <a href="https://docs.google.com/spreadsheets/d/{vfxpy_key}">vfxpy spreadsheet</a> accordingly:</p>
+        """.format(community_key=community_key, vfxpy_key=vfxpy_key)
 
         for idx, each in enumerate(changes):
             body_html += "<h4>Change ID: {num}</h4>".format(num=idx)
